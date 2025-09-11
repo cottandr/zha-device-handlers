@@ -5,7 +5,7 @@ from zigpy.types import t
 from zigpy.zcl.clusters.hvac import Thermostat
 
 from zhaquirks.tuya.builder import TuyaQuirkBuilder
-from zhaquirks.tuya.mcu import TuyaAttributesCluster
+from zhaquirks.tuya.mcu import DPToAttributeMapping, TuyaAttributesCluster
 
 
 class Preset(t.enum8):
@@ -35,9 +35,9 @@ class ControlAlgorithm(t.enum8):
 class RelayMode(t.enum8):
     """Thermostat Relay Mode."""
 
-    NO: 0x00
-    NC: 0x01
-    OFF: 0x02
+    NO = 0x00
+    NC = 0x01
+    OFF = 0x02
 
 class EngoThermostat(Thermostat, TuyaAttributesCluster):
     """Engo thermostat cluster."""
@@ -77,16 +77,30 @@ class EngoThermostat(Thermostat, TuyaAttributesCluster):
             Thermostat.SystemMode.Cool: 1,
         }[x],
     )
-    .tuya_dp(
+    .tuya_dp_multi(
         dp_id=3,
-        ep_attribute=EngoThermostat.ep_attribute,
-        attribute_name=EngoThermostat.AttributeDefs.running_mode.name,
-        converter=lambda x: {
-            2: Thermostat.RunningMode.Heat,
-            3: Thermostat.RunningMode.Cool,
-            4: Thermostat.RunningMode.Off,
-            5: Thermostat.RunningMode.Off,
-        }[x],
+        attribute_mapping=[
+            DPToAttributeMapping(
+                ep_attribute=EngoThermostat.ep_attribute,
+                attribute_name=EngoThermostat.AttributeDefs.running_state.name,
+                converter=lambda x: {
+                    2: Thermostat.RunningState.Heat_State_On,
+                    3: Thermostat.RunningState.Cool_State_On,
+                    4: Thermostat.RunningState.Idle,
+                    5: Thermostat.RunningState.Idle,
+                }[x],
+            ),
+            DPToAttributeMapping(
+                ep_attribute=EngoThermostat.ep_attribute,
+                attribute_name=EngoThermostat.AttributeDefs.running_mode.name,
+                converter=lambda x: {
+                    2: Thermostat.RunningMode.Heat,
+                    3: Thermostat.RunningMode.Cool,
+                    4: Thermostat.RunningMode.Off,
+                    5: Thermostat.RunningMode.Off,
+                }[x],
+            ),
+        ],
     )
     .tuya_dp(
         dp_id=16,
@@ -143,14 +157,14 @@ class EngoThermostat(Thermostat, TuyaAttributesCluster):
     .tuya_enum(
         dp_id=58,
         attribute_name="preset",
-        enum_class=Preset,
+        enum_class=Preset, # type: ignore
         translation_key="preset",
         fallback_name="Preset",
     )
     .tuya_enum(
         dp_id=101,
         attribute_name="control_algorithm",
-        enum_class=ControlAlgorithm,
+        enum_class=ControlAlgorithm, # type: ignore
         translation_key="control_algorithm",
         fallback_name="Control Algorithm",
     )
@@ -175,12 +189,12 @@ class EngoThermostat(Thermostat, TuyaAttributesCluster):
     .tuya_enum(
         dp_id=108,
         attribute_name="relay_mode",
-        enum_class=ControlAlgorithm,
+        enum_class=ControlAlgorithm, # type: ignore
         translation_key="relay_mode",
         fallback_name="Relay Mode",
     )
-    .adds(EngoThermostat)
     .tuya_enchantment(True, True)
+    .adds(EngoThermostat)
     .skip_configuration()
     .add_to_registry()
 )
