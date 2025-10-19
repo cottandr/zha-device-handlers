@@ -151,7 +151,7 @@ class EngoThermostat(Thermostat, TuyaAttributesCluster):
         unit="%",
         min_value=0.0,
         max_value=100.0,
-        multiplier=10,
+        multiplier=1.0,
         step=10,
     )
     .tuya_enum(
