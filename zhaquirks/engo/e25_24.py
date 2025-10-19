@@ -39,6 +39,7 @@ class RelayMode(t.enum8):
     NC = 0x01
     OFF = 0x02
 
+
 class EngoThermostat(Thermostat, TuyaAttributesCluster):
     """Engo thermostat cluster."""
 
