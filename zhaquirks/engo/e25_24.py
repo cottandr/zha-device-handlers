@@ -157,14 +157,14 @@ class EngoThermostat(Thermostat, TuyaAttributesCluster):
     .tuya_enum(
         dp_id=58,
         attribute_name="preset",
-        enum_class=Preset, # type: ignore
+        enum_class=Preset,
         translation_key="preset",
         fallback_name="Preset",
     )
     .tuya_enum(
         dp_id=101,
         attribute_name="control_algorithm",
-        enum_class=ControlAlgorithm, # type: ignore
+        enum_class=ControlAlgorithm,
         translation_key="control_algorithm",
         fallback_name="Control Algorithm",
     )
@@ -189,7 +189,7 @@ class EngoThermostat(Thermostat, TuyaAttributesCluster):
     .tuya_enum(
         dp_id=108,
         attribute_name="relay_mode",
-        enum_class=RelayMode, # type: ignore
+        enum_class=RelayMode,
         translation_key="relay_mode",
         fallback_name="Relay Mode",
     )
