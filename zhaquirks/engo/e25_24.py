@@ -189,7 +189,7 @@ class EngoThermostat(Thermostat, TuyaAttributesCluster):
     .tuya_enum(
         dp_id=108,
         attribute_name="relay_mode",
-        enum_class=ControlAlgorithm, # type: ignore
+        enum_class=RelayMode, # type: ignore
         translation_key="relay_mode",
         fallback_name="Relay Mode",
     )
