@@ -39,8 +39,9 @@ class RelayMode(t.enum8):
     NC = 0x01
     OFF = 0x02
 
-class EngoThermostat(Thermostat, TuyaAttributesCluster):
-    """Engo thermostat cluster."""
+
+class EngoE25Thermostat(Thermostat, TuyaAttributesCluster):
+    """Engo E25 thermostat cluster."""
 
     _CONSTANT_ATTRIBUTES = {
         Thermostat.AttributeDefs.ctrl_sequence_of_oper.id: Thermostat.ControlSequenceOfOperation.Heating_Only
@@ -66,8 +67,8 @@ class EngoThermostat(Thermostat, TuyaAttributesCluster):
     )
     .tuya_dp(
         dp_id=2,
-        ep_attribute=EngoThermostat.ep_attribute,
-        attribute_name=EngoThermostat.AttributeDefs.system_mode.name,
+        ep_attribute=EngoE25Thermostat.ep_attribute,
+        attribute_name=EngoE25Thermostat.AttributeDefs.system_mode.name,
         converter=lambda x: {
             0: Thermostat.SystemMode.Heat,
             1: Thermostat.SystemMode.Cool,
@@ -81,8 +82,8 @@ class EngoThermostat(Thermostat, TuyaAttributesCluster):
         dp_id=3,
         attribute_mapping=[
             DPToAttributeMapping(
-                ep_attribute=EngoThermostat.ep_attribute,
-                attribute_name=EngoThermostat.AttributeDefs.running_state.name,
+                ep_attribute=EngoE25Thermostat.ep_attribute,
+                attribute_name=EngoE25Thermostat.AttributeDefs.running_state.name,
                 converter=lambda x: {
                     2: Thermostat.RunningState.Heat_State_On,
                     3: Thermostat.RunningState.Cool_State_On,
@@ -91,8 +92,8 @@ class EngoThermostat(Thermostat, TuyaAttributesCluster):
                 }[x],
             ),
             DPToAttributeMapping(
-                ep_attribute=EngoThermostat.ep_attribute,
-                attribute_name=EngoThermostat.AttributeDefs.running_mode.name,
+                ep_attribute=EngoE25Thermostat.ep_attribute,
+                attribute_name=EngoE25Thermostat.AttributeDefs.running_mode.name,
                 converter=lambda x: {
                     2: Thermostat.RunningMode.Heat,
                     3: Thermostat.RunningMode.Cool,
@@ -104,35 +105,35 @@ class EngoThermostat(Thermostat, TuyaAttributesCluster):
     )
     .tuya_dp(
         dp_id=16,
-        ep_attribute=EngoThermostat.ep_attribute,
-        attribute_name=EngoThermostat.AttributeDefs.occupied_heating_setpoint.name,
+        ep_attribute=EngoE25Thermostat.ep_attribute,
+        attribute_name=EngoE25Thermostat.AttributeDefs.occupied_heating_setpoint.name,
         converter=lambda x: x * 10,
         dp_converter=lambda x: x // 10,
     )
     .tuya_dp(
         dp_id=19,
-        ep_attribute=EngoThermostat.ep_attribute,
-        attribute_name=EngoThermostat.AttributeDefs.max_heat_setpoint_limit.name,
+        ep_attribute=EngoE25Thermostat.ep_attribute,
+        attribute_name=EngoE25Thermostat.AttributeDefs.max_heat_setpoint_limit.name,
         converter=lambda x: x * 10,
         dp_converter=lambda x: x // 10,
     )
     .tuya_dp(
         dp_id=24,
-        ep_attribute=EngoThermostat.ep_attribute,
-        attribute_name=EngoThermostat.AttributeDefs.local_temperature.name,
+        ep_attribute=EngoE25Thermostat.ep_attribute,
+        attribute_name=EngoE25Thermostat.AttributeDefs.local_temperature.name,
         converter=lambda x: x * 10,
     )
     .tuya_dp(
         dp_id=26,
-        ep_attribute=EngoThermostat.ep_attribute,
-        attribute_name=EngoThermostat.AttributeDefs.min_heat_setpoint_limit.name,
+        ep_attribute=EngoE25Thermostat.ep_attribute,
+        attribute_name=EngoE25Thermostat.AttributeDefs.min_heat_setpoint_limit.name,
         converter=lambda x: x * 10,
         dp_converter=lambda x: x // 10,
     )
     .tuya_dp(
         dp_id=27,
-        ep_attribute=EngoThermostat.ep_attribute,
-        attribute_name=EngoThermostat.AttributeDefs.local_temperature_calibration.name,
+        ep_attribute=EngoE25Thermostat.ep_attribute,
+        attribute_name=EngoE25Thermostat.AttributeDefs.local_temperature_calibration.name,
         converter=lambda x: x * 10,
         dp_converter=lambda x: x // 10,
     )
@@ -194,7 +195,9 @@ class EngoThermostat(Thermostat, TuyaAttributesCluster):
         fallback_name="Relay Mode",
     )
     .tuya_enchantment(True, True)
-    .adds(EngoThermostat)
+    .applies_to("_TZE204_cg8hdnjv", "TS0601")
+    .friendly_name(manufacturer="Engo", model="E25 Thermostat")
+    .adds(EngoE25Thermostat)
     .skip_configuration()
     .add_to_registry()
 )
