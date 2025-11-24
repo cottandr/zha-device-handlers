@@ -134,8 +134,8 @@ class EngoE25Thermostat(Thermostat, TuyaAttributesCluster):
         dp_id=27,
         ep_attribute=EngoE25Thermostat.ep_attribute,
         attribute_name=EngoE25Thermostat.AttributeDefs.local_temperature_calibration.name,
-        converter=lambda x: x * 10,
-        dp_converter=lambda x: x // 10,
+        converter=lambda x: x,
+        dp_converter=lambda x: x,
     )
     .tuya_switch(
         dp_id=40,
