@@ -59,6 +59,9 @@ class EngoE25Thermostat(Thermostat, TuyaAttributesCluster):
             Thermostat.AttributeDefs.setpoint_change_source_timestamp.id
         )
         self.add_unsupported_attribute(Thermostat.AttributeDefs.pi_heating_demand.id)
+        self.add_unsupported_attribute(
+            Thermostat.AttributeDefs.local_temperature_calibration.id
+        )
 
 
 # Common quirk settings for all E25 thermostat models
@@ -136,12 +139,17 @@ def e25_base_quirk(manufacturer: str, model: str):
             converter=lambda x: x * 10,
             dp_converter=lambda x: x // 10,
         )
-        .tuya_dp(
+        .tuya_number(
             dp_id=27,
-            ep_attribute=EngoE25Thermostat.ep_attribute,
-            attribute_name=EngoE25Thermostat.AttributeDefs.local_temperature_calibration.name,
-            converter=lambda x: x,
-            dp_converter=lambda x: x,
+            attribute_name="temperature_calibration",
+            translation_key="temperature_calibration",
+            fallback_name="Temperature Calibration",
+            type=t.int8s,
+            unit="°C",
+            min_value=-10.0,
+            max_value=10.0,
+            multiplier=0.1,
+            step=0.1,
         )
         .tuya_switch(
             dp_id=40,
@@ -175,50 +183,52 @@ def e25_base_quirk(manufacturer: str, model: str):
             translation_key="control_algorithm",
             fallback_name="Control Algorithm",
         )
-        .tuya_number(
-            dp_id=106,
-            attribute_name="frost_protection_setpoint",
-            type=t.uint16_t,
-            unit=UnitOfTemperature.CELSIUS,
-            min_value=5.0,
-            max_value=17.0,
-            multiplier=0.1,
-            step=0.5,
-            translation_key="frost_protection_setpoint",
-            fallback_name="Frost Protection Setpoint",
-        )
         .tuya_switch(
             dp_id=107,
             attribute_name="valve_protection",
             translation_key="valve_protection",
             fallback_name="Valve Protection",
         )
-        .tuya_enum(
-            dp_id=108,
-            attribute_name="relay_mode",
-            enum_class=RelayMode,
-            translation_key="relay_mode",
-            fallback_name="Relay Mode",
-        )
         .tuya_enchantment(True, True)
     )
 
+
 (
     # 24 Volt mains powered variant
-    e25_base_quirk( "_TZE204_cmyc8g5i", "TS0601")
-        .friendly_name(manufacturer="Engo", model="E25-24 Thermostat")
-        .adds(EngoE25Thermostat)
-        .skip_configuration()
-        # This could also be applied to the 230V variant
-        .add_to_registry()
+    e25_base_quirk("_TZE204_cmyc8g5i", "TS0601")
+    .tuya_enum(
+        dp_id=108,
+        attribute_name="relay_mode",
+        enum_class=RelayMode,
+        translation_key="relay_mode",
+        fallback_name="Relay Mode",
+    )
+    .tuya_number(
+        dp_id=106,
+        attribute_name="frost_protection_setpoint",
+        type=t.uint16_t,
+        unit=UnitOfTemperature.CELSIUS,
+        min_value=5.0,
+        max_value=17.0,
+        multiplier=0.1,
+        step=0.5,
+        translation_key="frost_protection_setpoint",
+        fallback_name="Frost Protection Setpoint",
+    )
+    .friendly_name(manufacturer="Engo", model="E25-24 Thermostat")
+    .adds(EngoE25Thermostat)
+    .skip_configuration()
+    # This could also be applied to the 230V variant
+    .add_to_registry()
 )
 
 (
     # Battery powered variant
     e25_base_quirk("_TZE204_cg8hdnjv", "TS0601")
-        .tuya_battery(35, battery_type=BatterySize.AA, battery_qty=2)
-        .friendly_name(manufacturer="Engo", model="E25-BAT Thermostat")
-        .adds(EngoE25Thermostat)
-        .skip_configuration()
-        .add_to_registry()
+    .tuya_battery(35, battery_type=BatterySize.AA, battery_qty=2)
+    .friendly_name(manufacturer="Engo", model="E25-BAT Thermostat")
+    .adds(EngoE25Thermostat)
+    .skip_configuration()
+    .add_to_registry()
 )
+
